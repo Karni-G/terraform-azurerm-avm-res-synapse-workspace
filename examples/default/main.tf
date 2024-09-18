@@ -77,6 +77,7 @@ module "key_vault" {
     bypass   = "AzureServices"
     ip_rules = ["${data.http.ip.response_body}/32"]
   }
+  depends_on = [ azurerm_resource_group.this ]
 }
 
 module "azure_data_lake_storage"{
@@ -104,6 +105,12 @@ module "azure_data_lake_storage"{
   storage_data_lake_gen2_filesystem = {
     name = var.storage_data_lake_gen2_filesystem_name
   }
+  depends_on = [ azurerm_resource_group.this ]
+}
+
+data "azurerm_storage_data_lake_gen2_filesystem" "storage_data_lake_gen2_filesystem_id" {
+  name               = var.storage_data_lake_gen2_filesystem_name
+  storage_account_id = module.azure_data_lake_storage.id
 }
 
 # This is the module call
@@ -116,5 +123,9 @@ module "azurerm_synapse_workspace" {
   resource_group_name = azurerm_resource_group.this
   location = azurerm_resource_group.this.location
   name = "synapse-workspace"
-  storage_data_lake_gen2_filesystem_id = module.azure_data_lake_storage.
+  storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id
+  depends_on = [ 
+    module.key_vault,
+    moduule.azure_data_lake_storage
+   ]
 }
