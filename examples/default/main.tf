@@ -41,6 +41,11 @@ data "http" "ip" {
   }
 }
 
+resource "random_password" "synapse_sql_admin_password" {
+  length  = 16
+  special = true
+}
+
 data "azurerm_client_config" "current" {}
 
 module "key_vault" {
@@ -53,11 +58,11 @@ module "key_vault" {
   public_network_access_enabled = true
   secrets = {
     test_secret = {
-      name = "test-secret"
+      name = var.sql_administrator_login
     }
   }
   secrets_value = {
-    test_secret = "secret-value"
+    test_secret = coalesce(var.sql_administrator_login_password, random_password.synapse_sql_admin_password)
   }
   role_assignments = {
     deployment_user_kv_admin = {
@@ -77,7 +82,7 @@ module "key_vault" {
 module "azure_data_lake_storage"{
   source = "Azure/avm-res-storage-storageaccount/azurerm"
   version = "0.2.7"
-  account_replication_type      = "RAGRS"
+  account_replication_type      = "ZRS"
   account_tier                  = "Standard"
   account_kind                  = "StorageV2"
   location                      = azurerm_resource_group.this.location
@@ -95,11 +100,9 @@ module "azure_data_lake_storage"{
       principal_id                     = data.azurerm_client_config.current.object_id
       skip_service_principal_aad_check = false
     },
-
   }
-
   storage_data_lake_gen2_filesystem = {
-    name = var.adlsfilesystem
+    name = var.storage_data_lake_gen2_filesystem_name
   }
 }
 
@@ -107,11 +110,11 @@ module "azure_data_lake_storage"{
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
 # with a data source.
-module "test" {
-  source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry    = var.enable_telemetry # see variables.tf
-  name                = "TODO"               # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name = azurerm_resource_group.this.name
+module "azurerm_synapse_workspace" {
+  source = "../.."
+  # source             = "Azure/avm-res-synapse-workspace"
+  resource_group_name = azurerm_resource_group.this
+  location = azurerm_resource_group.this.location
+  name = "synapse-workspace"
+  storage_data_lake_gen2_filesystem_id = module.azure_data_lake_storage.
 }

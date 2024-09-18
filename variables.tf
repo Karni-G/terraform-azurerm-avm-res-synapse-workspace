@@ -3,10 +3,20 @@ variable "name" {
   description = "The name of the this resource."
 
   validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
+    condition     = can(regex("^[a-zA-Z0-9-]{3,24}$", var.name))
+    error_message = "The name must be between 3 and 24 characters long and can only contain letters, numbers and dashes."
+  }
+  validation {
+    error_message = "The name must not contain two consecutive dashes"
+    condition     = !can(regex("--", var.name))
+  }
+  validation {
+    error_message = "The name must start with a letter"
+    condition     = can(regex("^[a-zA-Z]", var.name))
+  }
+  validation {
+    error_message = "The name must end with a letter or number"
+    condition     = can(regex("[a-zA-Z0-9]$", var.name))
   }
 }
 
@@ -14,6 +24,24 @@ variable "name" {
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
+}
+
+variable "storage_data_lake_gen2_filesystem_id" {
+  type = string
+  description = "Specifies the ID of storage data lake gen2 filesystem resource. Changing this forces a new resource to be created."
+}
+
+variable "sql_administrator_login" {
+  type = string
+  default = "SQLAdmin"
+  description = "Specifies The login name of the SQL administrator. Changing this forces a new resource to be created. If this is not provided customer_managed_key must be provided. "
+}
+
+variable "sql_administrator_login_password" {
+  type = string
+  sensitive = true
+  default = "null"
+  description = "The Password associated with the sql_administrator_login for the SQL administrator. If this is not provided customer_managed_key must be provided."
 }
 
 # required AVM interfaces

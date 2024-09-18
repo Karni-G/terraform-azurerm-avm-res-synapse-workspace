@@ -5,16 +5,21 @@ data "azurerm_resource_group" "parent" {
   name = var.resource_group_name
 }
 
+resource "random_password" "synapse_sql_admin_password" {
+  length  = 16
+  special = true
+}
+
 # Synapse module resource
 resource "azurerm_synapse_workspace" "this" {
   location = coalesce(var.location, local.resource_group_location)
   name     = var.name # calling code must supply the name
   resource_group_name = var.resource_group_name
-  storage_data_lake_gen2_filesystem_id = 
-  sql_administrator_login = 
-  sql_administrator_login_password = 
+  storage_data_lake_gen2_filesystem_id = var.storage_data_lake_gen2_filesystem_id
+  sql_administrator_login = var.sql_administrator_login
+  sql_administrator_login_password = coalesce(var.sql_administrator_login_password, random_password.synapse_sql_admin_password)
   identity {
-    type = var.identity
+    type = var.managed_identities
   }
   tags = var.tags
 }
