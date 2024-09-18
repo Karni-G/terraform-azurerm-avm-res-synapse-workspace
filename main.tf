@@ -5,10 +5,18 @@ data "azurerm_resource_group" "parent" {
   name = var.resource_group_name
 }
 
-# TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-resource "azurerm_resource_group" "TODO" {
+# Synapse module resource
+resource "azurerm_synapse_workspace" "this" {
   location = coalesce(var.location, local.resource_group_location)
   name     = var.name # calling code must supply the name
+  resource_group_name = var.resource_group_name
+  storage_data_lake_gen2_filesystem_id = 
+  sql_administrator_login = 
+  sql_administrator_login_password = 
+  identity {
+    type = var.identity
+  }
+  tags = var.tags
 }
 
 # required AVM resources interfaces
