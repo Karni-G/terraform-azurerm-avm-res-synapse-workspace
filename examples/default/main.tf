@@ -48,6 +48,8 @@ resource "random_password" "synapse_sql_admin_password" {
 
 data "azurerm_client_config" "current" {}
 
+# Creating Key vault to store sql admin secrets
+
 module "key_vault" {
   source             = "Azure/avm-res-keyvault-vault/azurerm"
   name                          = module.naming.key_vault.name_unique
@@ -80,10 +82,12 @@ module "key_vault" {
   depends_on = [ azurerm_resource_group.this ]
 }
 
+# Creating ADLS and file system for Synapse 
+
 module "azure_data_lake_storage"{
   source = "Azure/avm-res-storage-storageaccount/azurerm"
   version = "0.2.7"
-  account_replication_type      = "ZRS"
+  account_replication_type      = "LRS"
   account_tier                  = "Standard"
   account_kind                  = "StorageV2"
   location                      = azurerm_resource_group.this.location
@@ -113,10 +117,8 @@ data "azurerm_storage_data_lake_gen2_filesystem" "storage_data_lake_gen2_filesys
   storage_account_id = module.azure_data_lake_storage.id
 }
 
-# This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
+# This is the module call for Synapse Workspace
+
 module "azurerm_synapse_workspace" {
   source = "../.."
   # source             = "Azure/avm-res-synapse-workspace"
