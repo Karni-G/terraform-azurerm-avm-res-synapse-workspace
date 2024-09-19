@@ -137,6 +137,8 @@ module "azurerm_synapse_workspace" {
   name = "synapse-workspace"
   storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id
   cmk_enabled = true
+  key_name = "enckey"
+  key_versionless_id = module.key_vault.keys_resource_ids["workspaceencryptionkey"].versionless_id
   key_vault_id = module.key_vault.resource_id
   managed_identities = {
     system_assigned = true
