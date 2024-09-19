@@ -122,7 +122,7 @@ data "azurerm_storage_data_lake_gen2_filesystem" "storage_data_lake_gen2_filesys
 module "azurerm_synapse_workspace" {
   source = "../.."
   # source             = "Azure/avm-res-synapse-workspace"
-  resource_group_name = azurerm_resource_group.this
+  resource_group_name = azurerm_resource_group.this.name
   location = azurerm_resource_group.this.location
   name = "synapse-workspace"
   storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id

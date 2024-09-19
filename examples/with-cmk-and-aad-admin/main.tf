@@ -132,14 +132,15 @@ data "azurerm_storage_data_lake_gen2_filesystem" "storage_data_lake_gen2_filesys
 module "azurerm_synapse_workspace" {
   source = "../.."
   # source             = "Azure/avm-res-synapse-workspace"
-  resource_group_name = azurerm_resource_group.this
+  resource_group_name = azurerm_resource_group.this.name
   location = azurerm_resource_group.this.location
   name = "synapse-workspace"
   storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id
   cmk_enabled = true
-  key_name = "enckey"
+  synapse_key_name = var.synapse_key_name
   key_versionless_id = module.key_vault.keys_resource_ids["workspaceencryptionkey"].versionless_id
   key_vault_id = module.key_vault.resource_id
+  aad_admin_obj_id = ""
   managed_identities = {
     system_assigned = true
   }

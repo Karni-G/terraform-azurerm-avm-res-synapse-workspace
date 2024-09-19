@@ -56,7 +56,7 @@ variable "key_versionless_id" {
   default     = ""
 }
 
-variable "key_name" {
+variable "synapse_key_name" {
   description = "The ID of the customer-managed key"
   type        = string
   default     = ""
@@ -72,6 +72,12 @@ variable "use_access_policy" {
   description = "Use access policy instead of RBAC role"
   type        = bool
   default     = false
+}
+
+variable "aad_admin_obj_id" {
+  type = string
+  default = ""
+  description = "The Object ID of AAD group to be added as an admin"
 }
 
 # required AVM interfaces
