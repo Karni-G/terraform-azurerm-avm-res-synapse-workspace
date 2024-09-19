@@ -126,6 +126,8 @@ module "azurerm_synapse_workspace" {
   location = azurerm_resource_group.this.location
   name = "synapse-workspace"
   storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id
+  sql_administrator_login = var.sql_administrator_login
+  sql_administrator_login_password = module.key_vault.secrets_resource_ids["test_secret"].secrets_value
   depends_on = [ 
     module.key_vault,
     moduule.azure_data_lake_storage
