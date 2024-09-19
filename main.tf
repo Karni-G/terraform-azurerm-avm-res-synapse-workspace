@@ -18,6 +18,10 @@ resource "azurerm_synapse_workspace" "this" {
   storage_data_lake_gen2_filesystem_id = var.storage_data_lake_gen2_filesystem_id
   sql_administrator_login = var.sql_administrator_login
   sql_administrator_login_password = coalesce(var.sql_administrator_login_password, random_password.synapse_sql_admin_password)
+  customer_managed_key {
+      key_name = var.cmk_enabled ? var.key_name : null
+      key_versionless_id = var.cmk_enabled ? var.key_versionless_id : null
+  }
   identity {
     type = var.managed_identities
   }

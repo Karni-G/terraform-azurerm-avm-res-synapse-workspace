@@ -48,7 +48,7 @@ resource "random_password" "synapse_sql_admin_password" {
 
 data "azurerm_client_config" "current" {}
 
-# Creating Key vault to store sql admin secrets
+# Creating Key vault to store Customer-managed Key (CMK)
 
 module "key_vault" {
   source             = "Azure/avm-res-keyvault-vault/azurerm"
@@ -136,6 +136,11 @@ module "azurerm_synapse_workspace" {
   location = azurerm_resource_group.this.location
   name = "synapse-workspace"
   storage_data_lake_gen2_filesystem_id = data.azurerm_storage_data_lake_gen2_filesystem.storage_data_lake_gen2_filesystem_id
+  cmk_enabled = true
+  key_vault_id = module.key_vault.resource_id
+  managed_identities = {
+    system_assigned = true
+  }
   depends_on = [ 
     module.key_vault,
     moduule.azure_data_lake_storage

@@ -44,6 +44,36 @@ variable "sql_administrator_login_password" {
   description = "The Password associated with the sql_administrator_login for the SQL administrator. If this is not provided customer_managed_key must be provided."
 }
 
+variable "cmk_enabled" {
+  description = "Enable customer-managed key for Synapse workspace"
+  type        = bool
+  default     = false
+}
+
+variable "key_versionless_id" {
+  description = "The ID of the customer-managed key"
+  type        = string
+  default     = ""
+}
+
+variable "key_name" {
+  description = "The ID of the customer-managed key"
+  type        = string
+  default     = ""
+}
+
+variable "key_vault_id" {
+  description = "The ID of the Key Vault"
+  type        = string
+  default = ""
+}
+
+variable "use_access_policy" {
+  description = "Use access policy instead of RBAC role"
+  type        = bool
+  default     = false
+}
+
 # required AVM interfaces
 # remove only if not supported by the resource
 # tflint-ignore: terraform_unused_declarations
